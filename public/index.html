@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOXIC TECH YOBBY - BOT</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background-color: #050505;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Matrix Rain Background */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            background-image: linear-gradient(0deg, transparent 24%, rgba(255, 0, 0, .3) 25%, rgba(255, 0, 0, .3) 26%, transparent 27%, transparent 74%, rgba(255, 0, 0, .3) 75%, rgba(255, 0, 0, .3) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 0, 0, .3) 25%, rgba(255, 0, 0, .3) 26%, transparent 27%, transparent 74%, rgba(255, 0, 0, .3) 75%, rgba(255, 0, 0, .3) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+        }
+
+        .container {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(255, 60, 60, 0.2);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            width: 90%;
+            max-width: 380px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #ff3c3c;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 24px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            background: #111;
+            border: 1px solid #444;
+            padding: 15px;
+            color: #ff3c3c;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            border-radius: 5px;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #ff3c3c;
+            box-shadow: 0 0 10px rgba(255, 60, 60, 0.3);
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(45deg, #ff3c3c, #a30000);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255, 60, 60, 0.5);
+        }
+
+        button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #result-area {
+            margin-top: 25px;
+            display: none;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
+        .code-box {
+            font-size: 32px;
+            font-family: 'Orbitron', sans-serif;
+            color: #00ff00;
+            margin: 10px 0;
+            text-shadow: 0 0 5px #00ff00;
+            letter-spacing: 3px;
+        }
+
+        .copy-btn-small {
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 15px;
+            font-size: 12px;
+            margin-top: 10px;
+            border-radius: 20px;
+            width: auto;
+            display: inline-block;
+        }
+        .copy-btn-small:hover {
+            background: #00ff00;
+            color: black;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #aaa;
+            min-height: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glitch {
+            position: relative;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="matrix-bg"></div>
+
+    <div class="container">
+        <h1 class="glitch" data-text="TOXIC TECH YOBBY">TOXIC TECH YOBBY</h1>
+        <div class="subtitle">WHATSAPP SESSION PAIRING</div>
+
+        <div class="input-group">
+            <input type="text" id="phoneNumber" placeholder="254723413244" maxlength="15">
+        </div>
+
+        <button id="pairBtn" onclick="requestPair()">GENERATE CODE</button>
+
+        <div id="result-area">
+            <div class="status">STATUS: CODE GENERATED</div>
+            <div class="code-box" id="codeDisplay">XXXX-XXXX</div>
+            <button class="copy-btn-small" onclick="copyCode()">COPY CODE</button>
+        </div>
+
+        <div id="status-msg" class="status"></div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        function requestPair() {
+            const number = document.getElementById('phoneNumber').value.replace(/[^0-9]/g, '');
+            if (number.length < 10) {
+                alert("Please enter a valid phone number");
+                return;
+            }
+            
+            const btn = document.getElementById('pairBtn');
+            const msg = document.getElementById('status-msg');
+            
+            btn.disabled = true;
+            btn.innerText = "CONNECTING...";
+            msg.innerText = "INITIALIZING SOCKET...";
+            document.getElementById('result-area').style.display = 'none';
+
+            socket.emit('request_pairing', { number: number });
+        }
+
+        socket.on('pairing_code', (code) => {
+            document.getElementById('pairBtn').disabled = false;
+            document.getElementById('pairBtn').innerText = "GENERATE CODE";
+            document.getElementById('status-msg').innerText = "SUCCESS! ENTER CODE IN WHATSAPP";
+            
+            document.getElementById('codeDisplay').innerText = code;
+            document.getElementById('result-area').style.display = 'block';
+        });
+
+        socket.on('status', (msg) => {
+            document.getElementById('status-msg').innerText = msg;
+        });
+
+        socket.on('error', (msg) => {
+            document.getElementById('pairBtn').disabled = false;
+            document.getElementById('pairBtn').innerText = "GENERATE CODE";
+            document.getElementById('status-msg').style.color = "red";
+            document.getElementById('status-msg').innerText = "ERROR: " + msg;
+        });
+
+        function copyCode() {
+            const code = document.getElementById('codeDisplay').innerText.replace(/-/g, '');
+            navigator.clipboard.writeText(code);
+            alert("Copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
